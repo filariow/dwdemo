@@ -1,11 +1,12 @@
 # My Devtools Week
 
-* Tried ArgoCD and looked at its internal wrt
+* Tried ArgoCD and looked at its internal focusing on the following topics
+    * Namespaced scope: [two installation methods](https://argo-cd.readthedocs.io/en/stable/operator-manual/installation/#non-high-availability)
     * Validation: they do not perform complex validation on CRD
-    * Authentication on linked clusters: based on Service Accounts
+    * Authentication on linked clusters: [based on Service Accounts](https://github.com/argoproj/argo-cd/blob/master/util/clusterauth/clusterauth.go)
 * Looked at [cobra](https://github.com/spf13/cobra)
 * Developed [KId](https://github.com/filariow/kid)
-* Hashicorp Vault on Kubernetes with Service Account authorization
+* [Hashicorp Vault](https://developer.hashicorp.com/vault/docs/what-is-vault) on [Kubernetes with Service Account authorization](https://developer.hashicorp.com/vault/docs/auth/kubernetes)
 
 
 ## KId
