@@ -26,5 +26,5 @@ A simple CLI for managing Identity based on Kubernetes' Service Accounts. It ena
 * Enable Service Account authentication
 * Create a Secret
 * Authorize a Service Account
-* Get the Secret as the Service Account
+* Get the Secret as the Service Account from remote cluster
 
