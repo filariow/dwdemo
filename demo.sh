@@ -33,6 +33,7 @@ u="https://$b:6443"
 
 ## on main cluster, configure vault kubernetes auth
 kid/out/kid create identity vault-auth
+sleep 2 # give time to k8s generate the token
 cacrt=$(kid/out/kid get token vault-auth | jq -r '."ca.crt" | @base64d')
 jwt=$(kid/out/kid get token vault-auth | jq -r '.token | @base64d')
 
@@ -60,6 +61,7 @@ EOF
 
 ## on main cluster, create an identity for worker cluster
 kid/out/kid create identity worker
+sleep 2 # give time to k8s generate the token
 wkfg=$(kid/out/kid get kubeconfig worker -s "$u")
 jwt=$(kid/out/kid get token worker | jq -r '.token')
 
