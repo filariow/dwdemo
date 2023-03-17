@@ -26,7 +26,7 @@ nodes:
 EOF
 
 ## configure main cluster
-( cd mc-vault && ./configure-primaza-cluster.sh )
+./configure-vault-cluster.sh
 
 b=$(docker container inspect main-control-plane --format {{.NetworkSettings.Networks.kind.IPAddress}})
 u="https://$b:6443"
@@ -68,9 +68,9 @@ kubectl exec vault-0 -- vault write auth/kubernetes/role/demo \
 	bound_service_account_namespaces=default \
 	policies=default
 
-
 kubectl cp policy.hcl vault-0:/tmp/policy.hcl
 kubectl exec vault-0 -- vault policy write default /tmp/policy.hcl
+
 
 # create worker cluster
 kind create cluster --name worker
@@ -128,10 +128,6 @@ EOF
 cat << EOF
 run the following commands
 
-cat vault-cli/main.go
-kubectl get pods demo -o yaml
-
 kubectl exec -it demo -- sh
 ./vault-cli
-
 EOF

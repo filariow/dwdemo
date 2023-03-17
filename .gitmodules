@@ -1,6 +1,3 @@
-[submodule "mc-vault"]
-	path = mc-vault
-	url = git@github.com:filariow/mc-vault.git
 [submodule "kid"]
 	path = kid
 	url = git@github.com:filariow/kid.git
