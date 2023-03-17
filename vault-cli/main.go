@@ -1,0 +1,68 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	vault "github.com/hashicorp/vault/api"
+	auth "github.com/hashicorp/vault/api/auth/kubernetes"
+)
+
+func main() {
+	sec, err := getSecretWithKubernetesAuth()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("read secret 'secret/data/foo[bar]': %s\n", sec)
+}
+
+// Fetches a key-value secret (kv-v2) after authenticating to Vault with a Kubernetes service account.
+// For a more in-depth setup explanation, please see the relevant readme in the hashicorp/vault-examples repo.
+func getSecretWithKubernetesAuth() (string, error) {
+	// If set, the VAULT_ADDR environment variable will be the address that
+	// your pod uses to communicate with Vault.
+	config := vault.DefaultConfig() // modify for more granular configuration
+
+	client, err := vault.NewClient(config)
+	if err != nil {
+		return "", fmt.Errorf("unable to initialize Vault client: %w", err)
+	}
+
+	// The service-account token will be read from the path where the token's
+	// Kubernetes Secret is mounted. By default, Kubernetes will mount it to
+	// /var/run/secrets/kubernetes.io/serviceaccount/token, but an administrator
+	// may have configured it to be mounted elsewhere.
+	// In that case, we'll use the option WithServiceAccountTokenPath to look
+	// for the token there.
+	k8sAuth, err := auth.NewKubernetesAuth(
+		"demo",
+		auth.WithServiceAccountTokenPath("/secrets/token"),
+	)
+	if err != nil {
+		return "", fmt.Errorf("unable to initialize Kubernetes auth method: %w", err)
+	}
+
+	authInfo, err := client.Auth().Login(context.TODO(), k8sAuth)
+	if err != nil {
+		return "", fmt.Errorf("unable to log in with Kubernetes auth: %w", err)
+	}
+	if authInfo == nil {
+		return "", fmt.Errorf("no auth info was returned after login")
+	}
+
+	// get secret from Vault, from the default mount path for KV v2 in dev mode, "secret"
+	secret, err := client.KVv2("secret").Get(context.Background(), "foo")
+	if err != nil {
+		return "", fmt.Errorf("unable to read secret: %w", err)
+	}
+
+	// data map can contain more than one key-value pair,
+	// in this case we're just grabbing one of them
+	value, ok := secret.Data["bar"].(string)
+	if !ok {
+		return "", fmt.Errorf("value type assertion failed: %T %#v", secret.Data["bar"], secret.Data["bar"])
+	}
+
+	return value, nil
+}
