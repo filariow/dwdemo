@@ -124,3 +124,14 @@ spec:
       secretName: worker-identity
 EOF
 
+
+cat << EOF
+run the following commands
+
+cat vault-cli/main.go
+kubectl get pods demo -o yaml
+
+kubectl exec -it demo -- sh
+./vault-cli
+
+EOF
